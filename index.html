@@ -110,7 +110,8 @@ input:focus { border-color: var(--gold); }
 
   var code = '', peer = null, conn = null, last = null, team = -1, wantJoin = false, retryT = null, slowT = null;
   var myName = store.get('fhsb.name') || '';
-  var savedTeam = Number(store.get('fhsb.team'));
+  var savedTeamRaw = store.get('fhsb.team');
+  var savedTeam = savedTeamRaw === '0' ? 0 : savedTeamRaw === '1' ? 1 : -1; // no team picked yet = none selected
   $('name').value = myName;
 
   function show(id) {
