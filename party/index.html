@@ -23,11 +23,13 @@
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; height: 100%; }
 body { background: conic-gradient(from 168deg at 30% -4%, transparent 0deg, rgba(255, 214, 160, .08) 9deg, transparent 18deg), conic-gradient(from 176deg at 70% -4%, transparent 0deg, rgba(255, 170, 110, .08) 9deg, transparent 18deg), radial-gradient(ellipse 90% 70% at 50% 35%, #241a16, #120d0b 55%, #050403); background-attachment: fixed; color: var(--cream); font-family: 'Fredoka', 'Segoe UI', system-ui, -apple-system, sans-serif; font-size: 18px; -webkit-font-smoothing: antialiased; overscroll-behavior: none; user-select: none; -webkit-user-select: none; }
-.app { min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: max(18px, env(safe-area-inset-top)) 18px max(16px, env(safe-area-inset-bottom)); gap: 14px; }
+.app { position: relative; min-height: 100%; display: flex; flex-direction: column; align-items: center; padding: calc(max(6px, env(safe-area-inset-top)) + 28px) 18px calc(max(6px, env(safe-area-inset-bottom)) + 28px); gap: 14px; }
 .top { text-align: center; }
-body::before { content: ''; position: fixed; inset: 6px; z-index: -1; pointer-events: none; border-radius: 22px; border: 2px solid #3a1a10;
-  background: radial-gradient(circle at 8px 8px, #fff7e0 0 3px, #ffb547 3.5px 4.5px, transparent 5.5px) 0 -2px / 26px 16px repeat-x, radial-gradient(circle at 8px 8px, #fff7e0 0 3px, #ffb547 3.5px 4.5px, transparent 5.5px) 0 calc(100% + 2px) / 26px 16px repeat-x;
+/* marquee bulbs: a strip at the top and at the bottom of the page (they move with the page, never over the text) */
+.bulbs { position: absolute; left: 6px; right: 6px; top: max(6px, env(safe-area-inset-top)); bottom: max(6px, env(safe-area-inset-bottom)); z-index: 0; pointer-events: none; border-radius: 22px; border: 2px solid #3a1a10;
+  background: radial-gradient(circle at 13px 8px, #fff7e0 0 3px, #ffb547 3.5px 4.5px, transparent 5.5px) 0 -2px / 26px 16px repeat-x, radial-gradient(circle at 13px 8px, #fff7e0 0 3px, #ffb547 3.5px 4.5px, transparent 5.5px) 0 calc(100% + 2px) / 26px 16px repeat-x;
   filter: drop-shadow(0 0 4px rgba(255, 170, 70, .8)); }
+.app > :not(.bulbs) { position: relative; z-index: 1; }
 .top .small { font-size: 12px; font-weight: 600; color: var(--gold); letter-spacing: .32em; text-shadow: 0 0 12px rgba(255,150,50,.5); }
 .top .big { font-size: 34px; font-weight: 700; line-height: 1.05; text-transform: uppercase; background: var(--foil); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 2px 0 #b3201c) drop-shadow(0 4px 0 #4f0909); }
 .screen { flex: 1; width: 100%; max-width: 440px; display: flex; flex-direction: column; justify-content: center; gap: 14px; text-align: center; }
@@ -61,6 +63,7 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
 </head>
 <body>
 <div class="app">
+  <div class="bulbs" aria-hidden="true"></div>
   <div class="top"><div class="small">FAMILY PARTY</div><div class="big">Showdown</div></div>
 
   <div class="screen" id="s-code">
