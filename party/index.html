@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23d6d6d6'/%3E%3Ccircle cx='32' cy='32' r='24' fill='%23e3342f'/%3E%3Ccircle cx='25' cy='24' r='7' fill='%23ff8a70'/%3E%3C/svg%3E">
 <meta name="color-scheme" content="dark">
 <meta name="theme-color" content="#0a0807">
 <meta name="robots" content="noindex">
@@ -44,16 +45,19 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
 .btn.primary { background: var(--redglass); color: #fff; border-color: #ffb0a0; text-transform: uppercase; letter-spacing: .06em; text-shadow: 0 1px 2px rgba(0,0,0,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.35), 0 12px 26px -10px rgba(227,52,47,.8); }
 .btn:disabled { opacity: .4; }
 .teams { display: grid; gap: 10px; }
-.team { border-color: color-mix(in srgb, var(--c) 70%, transparent); background: linear-gradient(160deg, color-mix(in srgb, var(--c) 30%, transparent), rgba(0,0,0,.25)); }
-.team.on { background: linear-gradient(180deg, color-mix(in srgb, var(--c) 90%, #fff 8%), color-mix(in srgb, var(--c) 65%, #000)); border-color: #f0f0f0; box-shadow: 0 0 0 3px rgba(255,255,255,.3), 0 10px 26px -8px var(--c); }
-.who { display: inline-block; padding: 7px 18px; border-radius: 10px; background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 90%, #fff 6%), color-mix(in srgb, var(--tc) 65%, #000)); border: 2px solid #d6d6d6; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; }
-.buzz { position: relative; width: min(78vw, 340px); aspect-ratio: 1; margin: 6px auto; border-radius: 50%; border: 10px solid transparent; background: radial-gradient(circle at 35% 28%, color-mix(in srgb, var(--tc) 50%, #fff), var(--tc) 52%, color-mix(in srgb, var(--tc) 55%, #000)) padding-box, var(--foil) border-box; color: #fff; font: inherit; font-size: 64px; font-weight: 700; letter-spacing: .04em; text-shadow: 0 4px 0 rgba(0,0,0,.3); box-shadow: 0 14px 0 color-mix(in srgb, var(--tc) 40%, #000), 0 24px 50px rgba(0,0,0,.55), inset 0 6px 14px rgba(255,255,255,.25); touch-action: manipulation; cursor: pointer; transition: transform .06s, box-shadow .06s; }
+/* Each colour-mix() line has a plain line before it: older phones (iOS 15) skip colour-mix() and use the plain one. */
+.team { border-color: var(--c); border-color: color-mix(in srgb, var(--c) 70%, transparent); background: rgba(0,0,0,.3); background: linear-gradient(160deg, color-mix(in srgb, var(--c) 30%, transparent), rgba(0,0,0,.25)); overflow-wrap: anywhere; }
+.team.on { background: var(--c); background: linear-gradient(180deg, color-mix(in srgb, var(--c) 90%, #fff 8%), color-mix(in srgb, var(--c) 65%, #000)); border-color: #f0f0f0; box-shadow: 0 0 0 3px rgba(255,255,255,.3), 0 10px 26px -8px var(--c); }
+.who { display: inline-block; max-width: 100%; padding: 7px 18px; border-radius: 10px; background: var(--tc); background: linear-gradient(180deg, color-mix(in srgb, var(--tc) 90%, #fff 6%), color-mix(in srgb, var(--tc) 65%, #000)); border: 2px solid #d6d6d6; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; overflow-wrap: anywhere; }
+.buzz { position: relative; width: min(78vw, 340px); aspect-ratio: 1; margin: 6px auto; border-radius: 50%; border: 10px solid #d6d6d6; border: 10px solid transparent; background: radial-gradient(circle at 35% 28%, rgba(255,255,255,.45), var(--tc) 52%) padding-box, var(--foil) border-box; background: radial-gradient(circle at 35% 28%, color-mix(in srgb, var(--tc) 50%, #fff), var(--tc) 52%, color-mix(in srgb, var(--tc) 55%, #000)) padding-box, var(--foil) border-box; color: #fff; font: inherit; font-size: 64px; font-weight: 700; letter-spacing: .04em; text-shadow: 0 4px 0 rgba(0,0,0,.3); box-shadow: 0 14px 0 rgba(0,0,0,.45), 0 24px 50px rgba(0,0,0,.55), inset 0 6px 14px rgba(255,255,255,.25); box-shadow: 0 14px 0 color-mix(in srgb, var(--tc) 40%, #000), 0 24px 50px rgba(0,0,0,.55), inset 0 6px 14px rgba(255,255,255,.25); touch-action: manipulation; cursor: pointer; transition: transform .06s, box-shadow .06s; }
 .buzz.armed { animation: glow 1.2s ease-in-out infinite; }
-.buzz:active, .buzz.pressed { transform: translateY(10px); box-shadow: 0 4px 0 color-mix(in srgb, var(--tc) 40%, #000), 0 10px 30px rgba(0,0,0,.5), inset 0 6px 14px rgba(255,255,255,.25); }
+.buzz:active, .buzz.pressed { transform: translateY(10px); box-shadow: 0 4px 0 rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.5), inset 0 6px 14px rgba(255,255,255,.25); box-shadow: 0 4px 0 color-mix(in srgb, var(--tc) 40%, #000), 0 10px 30px rgba(0,0,0,.5), inset 0 6px 14px rgba(255,255,255,.25); }
 .buzz.locked { filter: grayscale(.85) brightness(.6); animation: none; }
 .buzz.first { --tc: #ff9a2e; animation: none; }
-@keyframes glow { 50% { box-shadow: 0 14px 0 color-mix(in srgb, var(--tc) 40%, #000), 0 0 70px 14px color-mix(in srgb, var(--tc) 65%, transparent), inset 0 6px 14px rgba(255,255,255,.25); } }
-.msg { font-size: 24px; font-weight: 600; min-height: 1.3em; }
+@keyframes glow { 50% { box-shadow: 0 14px 0 rgba(0,0,0,.45), 0 0 70px 14px rgba(255,255,255,.25), inset 0 6px 14px rgba(255,255,255,.25); box-shadow: 0 14px 0 color-mix(in srgb, var(--tc) 40%, #000), 0 0 70px 14px color-mix(in srgb, var(--tc) 65%, transparent), inset 0 6px 14px rgba(255,255,255,.25); } }
+/* phone turned sideways: the button must fit the short screen */
+@media (orientation: landscape) and (max-height: 520px) { .buzz { width: min(46vh, 50vw); font-size: 38px; border-width: 7px; margin: 0 auto; } .app { gap: 6px; padding-top: calc(max(6px, env(safe-area-inset-top)) + 22px); } .screen { gap: 6px; } #s-buzz ~ .foot, .app:has(#s-buzz:not(.hidden)) .top { display: none; } .who { font-size: 14px; padding: 4px 12px; } .msg { font-size: 18px; min-height: 0; } .msg.win { font-size: 22px; } .link { padding: 2px; } }
+.msg { font-size: 24px; font-weight: 600; min-height: 1.3em; overflow-wrap: anywhere; }
 .msg.win { font-size: 32px; color: var(--gold); text-transform: uppercase; text-shadow: 0 0 24px rgba(255,150,50,.55); }
 .link { background: none; border: 0; color: var(--muted); font: inherit; font-size: 15px; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; padding: 8px; }
 .spinner { width: 46px; height: 46px; margin: 0 auto; border-radius: 50%; border: 5px solid rgba(251,243,228,.15); border-top-color: var(--gold); animation: spin 1s linear infinite; }
@@ -118,7 +122,7 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
   var pid = store.get('fpsb.pid');
   if (!pid) { pid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); store.set('fpsb.pid', pid); }
 
-  var code = '', peer = null, conn = null, last = null, team = -1, wantJoin = false, retryT = null, slowT = null;
+  var code = '', peer = null, conn = null, last = null, team = -1, wantJoin = false, retryT = null, slowT = null, hostOff = false;
   var myName = store.get('fpsb.name') || '';
   var savedTeamRaw = store.get('fpsb.team');
   var savedTeam = savedTeamRaw === '0' ? 0 : savedTeamRaw === '1' ? 1 : -1; // no team picked yet = none selected
@@ -128,24 +132,33 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
     ['s-code', 's-wait', 's-join', 's-buzz'].forEach(function (s) { $(s).classList.toggle('hidden', s !== id); });
   }
   function clean(c) { return String(c || '').toLowerCase().replace(/[^a-z0-9]/g, ''); }
-  function validCode(c) { return /^[a-z2-9]{6}$/.test(c); }
+  // Game codes never use o, i, l, 0 or 1 (easy to mix up).
+  function validCode(c) { return /^[a-hjkmnp-z2-9]{6}$/.test(c); }
+
+  // "Still trying…" hint: one timer per code, not reset by every retry.
+  function slowHint() {
+    clearTimeout(slowT);
+    slowT = setTimeout(function () {
+      if (hostOff) return;
+      $('wait-title').textContent = 'Still trying…';
+      $('wait-text').textContent = 'Check the code, and ask the host to turn on phone buzzers (it needs internet on their computer too).';
+    }, 12000);
+  }
 
   function start(c) {
+    if (conn) { var old = conn; conn = null; try { old.close(); } catch (e) { /* ignore */ } }
     code = c;
+    hostOff = false;
     try { history.replaceState(null, '', '#' + c); } catch (e) { /* ignore */ }
     $('wait-title').textContent = 'Connecting to the game…';
     $('wait-text').textContent = 'Make sure you have internet (Wi-Fi or mobile data).';
     show('s-wait');
+    slowHint();
     connect();
   }
 
   function connect() {
     clearTimeout(retryT);
-    clearTimeout(slowT);
-    slowT = setTimeout(function () {
-      $('wait-title').textContent = 'Still trying…';
-      $('wait-text').textContent = 'Check the code, and ask the host to turn on phone buzzers (it needs internet on their computer too).';
-    }, 12000);
     if (typeof Peer !== 'function') { $('wait-text').textContent = 'This browser can’t run the buzzer. Try Chrome or Safari.'; return; }
     if (!peer || peer.destroyed) {
       peer = new Peer({ debug: 0 });
@@ -175,7 +188,8 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
   function lost() {
     conn = null;
     if (!code) return;
-    $('wait-title').textContent = 'Reconnecting…';
+    // keep "The host turned off phone buzzers" on screen instead of "Reconnecting…"
+    if (!hostOff) { $('wait-title').textContent = 'Reconnecting…'; slowHint(); }
     show('s-wait');
     retry();
   }
@@ -187,8 +201,10 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
 
   function onMsg(m) {
     if (!m || typeof m !== 'object') return;
-    if (m.t === 'bye') { $('wait-title').textContent = 'The host turned off phone buzzers.'; $('wait-text').textContent = 'Waiting… this page reconnects by itself.'; show('s-wait'); return; }
-    if (m.t !== 'state') return;
+    if (m.t === 'bye') { hostOff = true; clearTimeout(slowT); $('wait-title').textContent = 'The host turned off phone buzzers.'; $('wait-text').textContent = 'Waiting… this page reconnects by itself.'; show('s-wait'); return; }
+    if (m.t !== 'state' || !Array.isArray(m.teams)) return;
+    hostOff = false;
+    clearTimeout(slowT);
     last = m;
     if (!m.joined) {
       // after a reconnect, join again by ourselves
@@ -259,7 +275,7 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
 
   function goCode() {
     var c = clean($('code').value);
-    if (!validCode(c)) { $('code-err').textContent = 'The code has 6 letters and numbers, like ABC234.'; return; }
+    if (!validCode(c)) { $('code-err').textContent = 'The code has 6 letters and numbers, like ABC234. Codes never use O, I, L, 0 or 1.'; return; }
     $('code-err').textContent = '';
     start(c);
   }
@@ -273,6 +289,12 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
     if (document.visibilityState === 'visible' && 'wakeLock' in navigator) navigator.wakeLock.request('screen').catch(function () {});
   });
   if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(function () {});
+
+  // A new QR code / link opened in the same tab only changes the #code: connect to the new game.
+  window.addEventListener('hashchange', function () {
+    var c = clean(location.hash);
+    if (validCode(c) && c !== code) start(c);
+  });
 
   var fromHash = clean(location.hash);
   if (validCode(fromHash)) start(fromHash); else show('s-code');
