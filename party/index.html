@@ -183,9 +183,10 @@ input:focus { border-color: #d6d6d6; box-shadow: inset 0 2px 8px rgba(0,0,0,.5),
         retry();
       });
       peer.on('disconnected', function () { try { peer.reconnect(); } catch (e) { retry(); } });
+      retry(); // look again soon: a connection service that never answers is replaced after 15 s
     } else if (peer.open) {
-      // a connection that is still opening gets its 7 s before we start a new one
-      if (!(conn && !conn.open && Date.now() - connSince < 7000)) openConn();
+      // keep a working connection, and give one that is still opening its 7 s
+      if (!(conn && (conn.open || Date.now() - connSince < 7000))) openConn();
     } else if (peer.disconnected) {
       try { peer.reconnect(); } catch (e) { peer.destroy(); retry(); }
     } else {
