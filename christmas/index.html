@@ -163,7 +163,7 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
       peer = new Peer({ debug: 0 });
       peer.on('open', openConn);
       peer.on('error', function (err) {
-        if (err && err.type === 'peer-unavailable') { $('wait-title').textContent = 'Game not found yet…'; }
+        if (err && err.type === 'peer-unavailable' && !hostOff) { $('wait-title').textContent = 'Game not found yet…'; }
         retry();
       });
       peer.on('disconnected', function () { try { peer.reconnect(); } catch (e) { retry(); } });
