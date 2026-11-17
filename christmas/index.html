@@ -122,6 +122,7 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
   if (!pid) { pid = Date.now().toString(36) + Math.random().toString(36).slice(2, 8); store.set('fhsb.pid', pid); }
 
   var code = '', peer = null, conn = null, last = null, team = -1, wantJoin = false, retryT = null, slowT = null, hostOff = false;
+  var connT = null, connSince = 0, peerSince = 0, lastRx = 0, hostPings = false;
   var myName = store.get('fhsb.name') || '';
   var savedTeamRaw = store.get('fhsb.team');
   var savedTeam = savedTeamRaw === '0' ? 0 : savedTeamRaw === '1' ? 1 : -1; // no team picked yet = none selected
@@ -148,6 +149,10 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
     if (conn) { var old = conn; conn = null; try { old.close(); } catch (e) { /* ignore */ } }
     code = c;
     hostOff = false;
+    hostPings = false;
+    // Same game as last time (e.g. the page was reloaded): join again by ourselves with the saved name and team.
+    wantJoin = !!(myName && (savedTeam === 0 || savedTeam === 1) && store.get('fhsb.code') === c);
+    if (wantJoin) team = savedTeam;
     try { history.replaceState(null, '', '#' + c); } catch (e) { /* ignore */ }
     $('wait-title').textContent = 'Connecting to the game…';
     $('wait-text').textContent = 'Make sure you have internet (Wi-Fi or mobile data).';
@@ -159,18 +164,31 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
   function connect() {
     clearTimeout(retryT);
     if (typeof Peer !== 'function') { $('wait-text').textContent = 'This browser can’t run the buzzer. Try Chrome or Safari.'; return; }
+    // A connection service that never answers (no open, no error): start again with a new one.
+    if (peer && !peer.destroyed && !peer.open && !peer.disconnected && Date.now() - peerSince > 15000) {
+      try { peer.destroy(); } catch (e) { /* ignore */ }
+      peer = null;
+    }
     if (!peer || peer.destroyed) {
       peer = new Peer({ debug: 0 });
+      peerSince = Date.now();
       peer.on('open', openConn);
       peer.on('error', function (err) {
-        if (err && err.type === 'peer-unavailable' && !hostOff) { $('wait-title').textContent = 'Game not found yet…'; }
+        if (err && err.type === 'peer-unavailable') {
+          // that connection attempt is over: the next retry may start a new one right away
+          if (conn && !conn.open) { clearTimeout(connT); conn = null; }
+          if (!hostOff) $('wait-title').textContent = 'Game not found yet…';
+        }
         retry();
       });
       peer.on('disconnected', function () { try { peer.reconnect(); } catch (e) { retry(); } });
     } else if (peer.open) {
-      openConn();
+      // a connection that is still opening gets its 7 s before we start a new one
+      if (!(conn && !conn.open && Date.now() - connSince < 7000)) openConn();
     } else if (peer.disconnected) {
       try { peer.reconnect(); } catch (e) { peer.destroy(); retry(); }
+    } else {
+      retry(); // still talking to the connection service: look again soon
     }
   }
 
@@ -178,7 +196,17 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
     if (conn) { try { conn.close(); } catch (e) { /* ignore */ } }
     var c = peer.connect('fhs-' + code, { reliable: true });
     conn = c;
-    c.on('open', function () { clearTimeout(slowT); });
+    connSince = Date.now();
+    // Sometimes a connection attempt never answers at all (no open, no error): give up after 7 s and try again.
+    clearTimeout(connT);
+    connT = setTimeout(function () {
+      if (c !== conn || c.open) return;
+      conn = null;
+      try { c.close(); } catch (e) { /* ignore */ }
+      clearTimeout(retryT);
+      retryT = setTimeout(function () { if (code) connect(); }, 1000);
+    }, 7000);
+    c.on('open', function () { if (c === conn) { clearTimeout(connT); lastRx = Date.now(); } clearTimeout(slowT); });
     c.on('data', function (m) { if (c === conn) onMsg(m); });
     c.on('close', function () { if (c === conn) lost(); });
     c.on('error', function () { if (c === conn) lost(); });
@@ -200,6 +228,9 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
 
   function onMsg(m) {
     if (!m || typeof m !== 'object') return;
+    lastRx = Date.now();
+    // The host checks every few seconds that this phone is still here.
+    if (m.t === 'ping') { hostPings = true; send({ t: 'pong' }); return; }
     if (m.t === 'bye') { hostOff = true; clearTimeout(slowT); $('wait-title').textContent = 'The host turned off phone buzzers.'; $('wait-text').textContent = 'Waiting… this page reconnects by itself.'; show('s-wait'); return; }
     if (m.t !== 'state' || !Array.isArray(m.teams)) return;
     hostOff = false;
@@ -252,11 +283,14 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
     if (!myName || (team !== 0 && team !== 1)) return;
     store.set('fhsb.name', myName);
     store.set('fhsb.team', String(team));
+    store.set('fhsb.code', code);
+    savedTeam = team;
     wantJoin = true;
     send({ t: 'join', pid: pid, name: myName, team: team });
   });
   $('change').addEventListener('click', function () {
     wantJoin = false;
+    store.set('fhsb.code', '');
     send({ t: 'leave' });
     if (last) { drawTeams(last.teams); show('s-join'); }
   });
@@ -288,6 +322,19 @@ input:focus { border-color: var(--gold); box-shadow: inset 0 2px 8px rgba(0,0,0,
     if (document.visibilityState === 'visible' && 'wakeLock' in navigator) navigator.wakeLock.request('screen').catch(function () {});
   });
   if ('wakeLock' in navigator) navigator.wakeLock.request('screen').catch(function () {});
+
+  // The host pings every 10 s. Nothing heard for 25 s = the line is dead even if it looks open: connect again.
+  setInterval(function () {
+    if (code && conn && conn.open && hostPings && Date.now() - lastRx > 25000) {
+      var old = conn; conn = null;
+      try { old.close(); } catch (e) { /* ignore */ }
+      lost();
+    }
+  }, 5000);
+
+  // Tab closed or page left: tell the host right away, so the player leaves its list.
+  window.addEventListener('pagehide', function () { send({ t: 'gone' }); });
+  window.addEventListener('pageshow', function (e) { if (e.persisted && code && !(conn && conn.open)) connect(); });
 
   // A new QR code / link opened in the same tab only changes the #code: connect to the new game.
   window.addEventListener('hashchange', function () {
